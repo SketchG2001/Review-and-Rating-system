@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up Page</title>
+    <script src="js/nav_footer.js"></script>
+    <style>
+        /* Optional: Custom CSS styles */
+        /* body {
+            padding-top: 50px;
+        } */
+        .form-container {
+            max-width: 400px;
+            margin: auto;
+        }
+        
+        .signup-Btn {
+            width: 70%; 
+            }
+
+            .inline-link {
+            display: inline; /* Display the elements inline */
+            /* margin-right: 30%; Add some margin between the links */
+            text-decoration: none;
+            }
+            .product-link{
+                float: right;
+            }
+    </style>
+</head>
+<body>
+    <div id="nav-content"></div>
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="card form-container">
+                    <div class="card-body">
+                        <h2 class="text-center">Sign Up</h2>
+                        <form>
+                            <div class="form-group">
+                                <label for="fullname">Full Name:</label>
+                                <input type="text" class="form-control" id="fullname" placeholder="Enter full name">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email:</label>
+                                <input type="email" class="form-control" id="email" placeholder="Enter email">
+                            </div>
+                            <div class="form-group">
+                                <label for="mobile">Mobile No:</label>
+                                <input type="tel" class="form-control" id="mobile" placeholder="Mobile No">
+                            </div>
+                            <div class="form-group">
+                                <label for="dob">Date of birth:</label>
+                                <input type="date" class="form-control" id="dob" >
+                            </div>
+                            
+                            <div class="form-group mt-1 ">
+                                <label for="datefield" class="form-label">Gender</label>
+                                <div class="form-check form-check-inline">
+                                  <input class="form-check-input" type="radio" id="maleradio" name="gender" value="male" />
+                                  <label class="form-check-label" for="maleradio">Male</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                  <input class="form-check-input" type="radio" id="femaleradio" name="gender" value="female" />
+                                  <label class="form-check-label" for="femaleradio">Female</label>
+                                </div>
+                                <span id="genderError" class="text-danger"></span>
+                              </div>
+
+
+                            <div class="form-group">
+                                <label for="password">Password:</label>
+                                <input type="password" class="form-control" id="password" placeholder="Enter password">
+                            </div>
+                            <div class="form-group">
+                                <label for="cpassword">Confirm Password:</label>
+                                <input type="password" class="form-control" id="cpassword" placeholder="Confirm password">
+                            </div>
+                            <div class="container ">
+                                <a href="login.html" class="inline-link"><span>Login</span></a>
+                                <a href="product.html" class="inline-link product-link">View Product</a>
+                            </div>
+                            
+                            <div class="container text-center">
+                                <button type="submit" class="btn btn-primary btn-block mt-2 signup-Btn"style="border-radius: 40px;">Sign Up</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <div id="foot-content" class="mt-lg-3 "></div>
+</body>
+</html>
