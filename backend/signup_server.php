@@ -1,7 +1,5 @@
 <?php
-
 include("../db_cofnfiguration/config.php");
-
 
 function validateFormData($name, $email, $mobile, $dob, $gender, $password, $cpassword) {
     $nameValidation = validateName($name);
@@ -19,7 +17,7 @@ function validateFormData($name, $email, $mobile, $dob, $gender, $password, $cpa
         return $mobileValidation;
     }
 
-    $dobValidation = validateDate($dob);
+    $dobValidation = validateDate($dob, 'd-m-Y'); // Validate date in "d-m-Y" format
     if ($dobValidation !== true) {
         return $dobValidation;
     }
@@ -59,8 +57,8 @@ function validateEmail($email) {
     if (empty($email)) {
         return "Email address cannot be empty.";
     }
-    if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        return "Invalid Email address.";
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return "Invalid email address.";
     }
 
     return true;
@@ -70,23 +68,28 @@ function validateMobile($mobile) {
     if (empty($mobile)) {
         return "Mobile number cannot be empty.";
     }
-    if (!filter_var($mobile, FILTER_VALIDATE_INT) && strlen($mobile) === 10){
-        return 'invalid mobile number.';
+    if (!preg_match('/^\d{10}$/', $mobile)) {
+        return 'Invalid mobile number. Please enter a 10-digit number.';
+        echo $mobile;
     }
 
     return true;
 }
 
-function validateDate($date, $format = 'd-m-Y') {
+function validateDate($date) {
     if (empty($date)) {
         return "Date of birth cannot be empty.";
     }
-    $dateTime = DateTime::createFromFormat($format, $date);
-    if (!$dateTime || $dateTime->format($format) !== $date) {
-        return "Invalid date format. Please enter a valid date in the format $format.";
+    
+    // Create a DateTime object from the input date
+    $dateTime = DateTime::createFromFormat('Y-m-d', $date);
+    
+    // Check if the DateTime object was created successfully and matches the input date
+    if (!$dateTime || $dateTime->format('Y-m-d') !== $date) {
+        return "Invalid date format. Please enter a valid date.";
     }
     
-    return true;
+    return true;  // Date is valid
 }
 
 function validateGender($gender) {
@@ -94,7 +97,7 @@ function validateGender($gender) {
         return "Gender cannot be empty.";
     }
     
-    if ($gender !== "male" && $gender !== "female"){
+    if (!in_array($gender, ['male', 'female'])) {
         return "Invalid gender. Please select either 'male' or 'female'.";
     }
     
@@ -122,26 +125,9 @@ function validateConfirmPassword($password, $cpassword) {
     return true;
 }
 
-// Usage example:
-$name = $_POST["name"];
-$email = $_POST["email"];
-$mobile = $_POST["fmobile"];
-$dob = $_POST["date"];
-$gender = $_POST["gender"];
-$password = $_POST["pass"];
-$cpassword = $_POST["cpass"];
-
-$validationResult = validateFormData($name, $email, $mobile, $dob, $gender, $password, $cpassword);
-if ($validationResult === true) {
-    // All form data is valid, proceed with further processing
-    echo "Form data is valid.";
-} else {
-    // Validation failed, display error message
-    echo "Validation failed: " . $validationResult;
-}
-
+// Validate form data upon form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $maxFileSize = 5 * 1024 * 1024;
+    // Extract form data
     $name = $_POST["name"];
     $email = $_POST["email"];
     $mobile = $_POST["fmobile"];
@@ -150,81 +136,82 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST["pass"];
     $cpassword = $_POST["cpass"];
 
-    echo $name ."<br>";
-    echo $email ."<br>";
-    echo $mobile ."<br>";
-    echo $dob ."<br>";
     
-    echo $gender ."<br>";
-    echo $password ."<br>";
-    echo $cpassword ."<br>";
 
-    $validationResult = validateFormData($name, $email, $mobile, $dob, $gender, $password, $cpassword);
-    echo $validationResult;
+
+    $validationResult = validateDate($dob);
+    // print_r($validationResult);
     // exit();
 
-    if ($validationResult === true) {
-        header("Location: ../frontend/SignUp.php?error=" . urlencode($validationResult));
+    // Validate form data
+    $validationResult = validateFormData($name, $email, $mobile, $dob, $gender, $password, $cpassword);
+    if ($validationResult !== true) {
+        // Validation failed, display error message
+            header("Location: ../frontend/SignUp.php?error=" . urlencode($validationResult));
             exit();
-    }
-    if (isset($_FILES["file"]) && $_FILES["file"]["error"] == 0) {     
-        $file = $_FILES["file"];
-        $fileTMPName = $_FILES['file']['tmp_name'];
-        $filename = $_FILES['file']['name'];
-        $filesize = $_FILES['file']['size'];
-        $fileerror = $_FILES['file']['error'];
-        $filetype = $_FILES['file']['type'];
-            echo "File Name: " . $filename . "<br>";
-            echo "File Type: " . $filetype . "<br>";
-            echo "File Size: " . ($filesize / 1024) . " KB<br>";
-            echo "Temporary File Location: " . $fileTMPName . "<br>";
-            echo $fileerror."<br>";
-            $allowed = array('jpg', 'jpeg', 'png', 'pdf');
+    } else {
+        // Validation passed, proceed with further processing (e.g., file upload)
+        // Handle file upload
+        if (isset($_FILES["file"]) && $_FILES["file"]["error"] == 0) {
+            $file = $_FILES["file"];
+            $filename = $file['name'];
+            $fileTmpName = $file['tmp_name'];
+            $fileSize = $file['size'];
+            $fileError = $file['error'];
+            $fileType = $file['type'];
             
-            $fileExt = explode('.',$filename);
-            $fileactualExt = strtolower(end($fileExt));
-            if (in_array($fileactualExt, $allowed)){
-            if ($fileerror === 0){
-                if ($filesize < $maxFileSize){
-                    $fileNameNew = uniqid('',true). ".".$fileactualExt;
-                    $fileDestination = '../uploads/'. basename($fileNameNew);
-                    echo $fileDestination .'<br>';
-                            
-                        if (move_uploaded_file($fileTMPName, $fileDestination)){
-                                // echo "file Uploaded";
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
+            $fileExt = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
+            if (in_array($fileExt, $allowedExtensions)) {
+                if ($fileError === 0) {
+                    if ($fileSize < 5 * 1024 * 1024) { // 5 MB maximum file size
+                        $fileNameNew = uniqid('', true) . '.' . $fileExt;
+                        $fileDestination = '../uploads/' . $fileNameNew;
+                        
+                        if (move_uploaded_file($fileTmpName, $fileDestination)) {
+                            // File uploaded successfully, proceed with database operations, etc.
                             $securedPassword = password_hash($password, PASSWORD_DEFAULT);
-                            echo $securedPassword ."<br>";
+                            $sql = "INSERT INTO USERS (Name,email,mobile,dob,gender,password,picture) 
+                            VALUES ('$name','$email','$mobile','$dob','$gender','$securedPassword','$fileNameNew')";
+                            // echo $mobile ."<br>";
+                            // exit();
+                        if ($conn->query($sql)) {
+                            $success_message = "You have registered successfully";
+                            header("Location: ../frontend/login.php?success=" . urlencode($success_message));
                             exit();
-                        }else{
-                                echo "error while uploading";
+                            }
+                        else {
+                            $error_message = "Something went wrong. Please try again.<br>" . $conn->error;
+                            header("Location: ../frontend/SignUp.php?error=" . urlencode($error_message));
+                            exit();
                         }
+                        $conn->close();                           
+                        } else {
+                            $error_msg = "Error while uploading file.";
+                            header("Location: ../frontend/SignUp.php?error=" . urlencode($error_msg));
+                            exit();
+                        }
+                    } else {
+                        $error_msg = "File size exceeds maximum limit (5 MB).";
+                        header("Location: ../frontend/SignUp.php?error=" . urlencode($error_msg));
+                        exit();
                     }
+                } else {
+                    $error_msg = "Error uploading file: " . $fileError;
+                    header("Location: ../frontend/SignUp.php?error=" . urlencode($error_msg));
+                    exit();
                 }
-                    
+            } else {
+                $error_msg = "Invalid file type. Allowed file types: " . implode(', ', $allowedExtensions);
+                header("Location: ../frontend/SignUp.php?error=" . urlencode($error_msg));
+                exit();
             }
+        } else {
+            $error_msg = "File upload error: No file uploaded or invalid file.";
+            header("Location: ../frontend/SignUp.php?error=" . urlencode($error_msg));
+            exit();
         }
-
-
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ?>

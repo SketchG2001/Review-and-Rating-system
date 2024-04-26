@@ -12,9 +12,9 @@ if (mysqli_connect_error())
     die("". mysqli_connect_error());
 }
 
-else {
-    echo "connection succesfull<br>";
-}
+// else {
+//     echo "connection succesfull<br>";
+// }
 
 
 
