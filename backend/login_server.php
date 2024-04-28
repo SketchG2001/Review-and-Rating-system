@@ -83,7 +83,7 @@ if ($result->num_rows == 1) {
     
     if (password_verify($password,$hashed_password)){
         $_SESSION["mobile"] = $mobile;
-        header("Location: ../frontend/welcome.php");
+        header("Location: ../frontend/allprod.php");
         exit();
     }
 

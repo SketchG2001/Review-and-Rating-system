@@ -1,30 +1,21 @@
-<!-- product.php -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Page</title>
-    <!-- Bootstrap CSS -->
+    <title>Document</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="js/nav_footer.js"></script>
 </head>
-
 <body>
-    <div id="nav-content"></div>
-
-
-    <?php
-    if (isset($_GET['success'])) {
-        $errorMessage = urldecode($_GET['success']);
-        echo '<p style="color: red;">' . $errorMessage . '</p>';
-    }
-
+<div id="nav-content"></div>
+<?php
+// Check if the 'id' parameter is set in the URL
+if(isset($_GET['id'])) {
+    // Retrieve the value of the 'id' parameter
     include("../db_cofnfiguration/config.php");
-
 
     function calculateAverageRating($productid, $conn)
     {
@@ -38,15 +29,14 @@
         }
     }
 
-    $sql = "SELECT * FROM product";
+    $id = mysqli_real_escape_string($conn, $_GET['id']);
 
+    $sql = "SELECT * FROM product WHERE id=$id";
     $result = $conn->query($sql);
-
-    if ($result->num_rows > 0) {
+    if  ($result->num_rows > 0){
         echo '<div class="container mt-4">';
         echo '<div class="row  row-cols-2 row-cols-md-3 g-5">';
-
-        while ($row = $result->fetch_assoc()) {
+        while ($row = $result->fetch_assoc()){
             $id = $row['id'];
             $name = $row['p_name'];
             $price = $row['p_price'];
@@ -54,10 +44,6 @@
             $image = $row['image'];
             $date = $row['Date'];
             $finalImg = '../products/' . $image;
-            // echo $id;
-            // exit();
-
-            
 
             $avgRating = calculateAverageRating($id, $conn);
             echo '<div class="col">';
@@ -85,16 +71,12 @@
                 }
             }
             echo '</p>';
-
             // Display average rating
             echo '<div class="d-flex justify-content-between">';
             echo '<a href="viewpost.php?id=' . $id . '" class="btn btn-primary view-post" >View full Post</a>';
-
-            // echo $id;
-            // exit();
             echo '<button type="button" class="btn btn-primary rate-review" data-toggle="modal" data-target="#reviewModal" data-id=" ' . $id . '">
             Rate & Review
-        </button>';
+            </button>';
             echo '</div>';
             echo '</div>'; // Close card-body
             echo '</div>'; // Close card
@@ -102,12 +84,15 @@
         }
         echo '</div>'; // Close row
         echo '</div>'; // Close container
-
+        }
     }
-    ?>
+else {
+    echo "No id parameter provided.";
+}
+?>
 
-    <!-- Modal -->
-    <div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewModalLabel" aria-hidden="true">
+ <!-- Modal -->
+ <div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -148,7 +133,11 @@
             });
         });
     </script>
-    <div id="foot-content"></div>
-</body>
 
+
+
+
+
+<div id="foot-content"></div>
+</body>
 </html>
