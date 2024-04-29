@@ -1,71 +1,53 @@
-<?php
-// Function to generate a star HTML element
-function generateStar($rating) {
-    // Check if rating is within range (0 to 5)
-    if ($rating < 0 || $rating > 5) {
-        return "Invalid rating";
-    }
-
-    // Calculate the width of the filled star
-    $filledWidth = ($rating / 5) * 100;
-
-    // Generate HTML code for the star
-    $starHTML = '<div class="star-rating">';
-    $starHTML .= '<div class="star-rating-inner" style="width: ' . $filledWidth . '%;"></div>';
-    $starHTML .= '</div>';
-
-    return $starHTML;
-}
-
-// Example usage
-$rating = 4.5; // Example rating
-echo generateStar($rating);
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="js/nav_footer.js"></script>
 </head>
-<style>
-    .star-rating {
-    display: inline-block;
-    font-size: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    position: relative;
-}
-
-.star-rating-inner {
-    display: inline-block;
-    font-size: 16px; /* Adjust the size of the star */
-    position: relative;
-    white-space: nowrap;
-    overflow: hidden;
-    width: 100%;
-}
-
-.star-rating-inner:before {
-    content: "★★★★★"; /* Unicode character for a solid star */
-    color: gold; /* Color of the filled star */
-    position: absolute;
-    top: 0;
-    left: 0;
-    white-space: nowrap;
-}
-
-.star-rating-inner:after {
-    content: "★★★★★"; /* Unicode character for an empty star */
-    color: lightgray; /* Color of the empty star */
-    position: absolute;
-    top: 0;
-    left: 0;
-    white-space: nowrap;
-}
-
-</style>
 <body>
-    
+<nav class="navbar navbar-expand-lg navbar bg-primary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Navbar</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="_home.php">Home</a>
+              </li>
+              <li class="nav-item active">
+                <a class="nav-link active" href="allprod.php">Products</a>
+              </li>
+              
+              <li class="nav-item">
+                <a class="nav-link active" href="SignUp.php">Sign Up</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="login.php">Login</a>
+              </li>
+              <?php
+   
+                if (isset($_SESSION['mobile'])) {
+                    echo '
+                    <li class="nav-item">
+                        <a class="nav-link active" href="../backend/logout.php">LogOut</a>
+                    </li>';
+                }
+                ?>
+            </ul>
+            <form class="d-flex" role="search">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+          </div>
+        </div>
+</nav>
+<div id="foot-content"></div>
 </body>
 </html>

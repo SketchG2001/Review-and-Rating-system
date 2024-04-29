@@ -20,15 +20,24 @@
                 <a class="nav-link active" aria-current="page" href="_home.html">Home</a>
               </li>
               <li class="nav-item active">
-                <a class="nav-link active" href="product.html">Products</a>
+                <a class="nav-link active" href="product.php">Products</a>
               </li>
               
               <li class="nav-item">
-                <a class="nav-link active" href="SignUp.html">Sign Up</a>
+                <a class="nav-link active" href="SignUp.php">Sign Up</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link active" href="login.html">Login</a>
+                <a class="nav-link active" href="/login.php">Login</a>
               </li>
+              <?php
+              session_start();
+                if (isset($_SESSION['mobile']) && $_SESSION['mobile'] === true) {
+                    echo '
+                    <li class="nav-item">
+                        <a class="nav-link active" href="../backend/logout.php">LogOut</a>
+                    </li>';
+                }
+                ?>
             </ul>
             <form class="d-flex" role="search">
               <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">

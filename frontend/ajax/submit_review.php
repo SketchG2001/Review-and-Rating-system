@@ -1,12 +1,28 @@
 <?php
 // Start session and include database configuration file
 session_start();
-// var_dump($_SESSION);
-// exit();
-include("../../db_cofnfiguration/config.php");
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
 
+if(!isset($_SESSION["mobile"])){
+    $message = "Please login to comment or review a product";
+    header("Location: ../login.php?message=" . urlencode($message));
+    exit();
+}
+
+include("../../db_cofnfiguration/config.php");
 // Check if form data is submitted via POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    $mobile = $_SESSION["mobile"];
+    $sql = "SELECT id FROM users where mobile = $mobile";
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $id = $row["id"];
+        }
+    }
     // Check if product ID and review are set
     if (isset($_POST['product_id']) && isset($_POST['review'])) {
         // Sanitize form data to prevent SQL injection
@@ -14,13 +30,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $review = mysqli_real_escape_string($conn, $_POST['review']);
         $rating = mysqli_real_escape_string($conn, $_POST['rating']);
 
-        // echo $productId ."<br>";
-        // echo $review ."<br>";
-        // echo $rating;
+        $exist_sql = "SELECT * FROM reviews WHERE user_id = $id AND p_id = $productId";
 
-        // exit();
+        $exist_result = $conn->query($exist_sql);
+        if ($exist_result->num_rows > 0) {
+            while ($row = $exist_result->fetch_assoc()) {
+                $review = $row['review'];
+                // echo $review;
+                $meassage =  "You have already submitted a review for this product.";
+                header("Location: ../allprod.php?error=" . urlencode($meassage));
+                exit();
+            }
+        }
+
         // Insert review into the database (you need to customize this query)
-        $sql = "INSERT INTO reviews (p_id,review,rating) VALUES ('$productId', '$review','$rating')";
+        $sql = "INSERT INTO reviews (user_id,p_id,review,rating) VALUES ('$id','$productId', '$review','$rating')";
         if ($conn->query($sql) === TRUE) {
             // If review is successfully inserted, return success message
             $success_message = "Review submitted successfully.";
