@@ -6,9 +6,11 @@ header("Pragma: no-cache");
 header("Expires: 0");
 
 // var_dump($_SESSION["mobile"]);
+// exit();
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,68 +19,97 @@ header("Expires: 0");
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="js/nav_footer.js"></script>
 </head>
 
 <body>
-<nav class="navbar navbar-expand-lg navbar bg-primary">
+    <nav class="navbar navbar-expand-lg navbar bg-body-tertiary">
         <div class="container-fluid">
-          <a class="navbar-brand" href="#">Navbar</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="_home.php">Home</a>
-              </li>
-              <li class="nav-item active">
-                <a class="nav-link active" href="allprod.php">Products</a>
-              </li>
-              
-              <li class="nav-item">
-                <a class="nav-link active" href="SignUp.php">Sign Up</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link active" href="login.php">Login</a>
-              </li>
-              <?php
-   
-                if (isset($_SESSION['mobile'])) {
-                    echo '
+            <a class="navbar-brand" href="allprod.php">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-bootstrap-reboot" viewBox="0 0 16 16">
+                    <!-- Bootstrap logo SVG -->
+                </svg> & <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bootstrap-reboot" viewBox="0 0 16 16">
+                    <!-- Bootstrap logo SVG -->
+                </svg>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" href="../backend/logout.php">LogOut</a>
+                        <a class="nav-link active" aria-current="page" href="_home.php"><b>Home</b></a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link active" href="allprod.php"><b>Products</b></a>
+                    </li>
+                    <?php
+                    if (isset($_SESSION['mobile'])) {
+                        echo '
+                    <li class="nav-item">
+                        <a class="nav-link active" href="../backend/logout.php"><b>Log Out</b></a>
                     </li>';
+                    } else {
+                        echo '
+                    <li class="nav-item">
+                        <a class="nav-link active" href="login.php"><b>Login</b></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="SignUp.php"><b>Sign Up</b></a>
+                    </li>';
+                    }
+                    ?>
+                </ul>
+                <?php
+                include("../db_cofnfiguration/config.php");
+                if (isset($_SESSION['mobile'])) {
+                    $mobile = $_SESSION['mobile'];
+                    $profile_sql = "SELECT * FROM users WHERE mobile = $mobile";
+                    $user = $conn->query($profile_sql);
+                    if ($user->num_rows > 0) {
+                        while ($row = $user->fetch_assoc()) {
+                            $image = $row["picture"];
+                            $name = $row["Name"];
+                            $finalImg = '../uploads/' . $image;
+                            echo '
+                        <div class="d-flex align-items-center">
+                            <img src="' . $finalImg . '" class="rounded-circle img-fluid" alt="Profile Image" style="width: 40px; height: 40px; object-fit: cover;">
+                            <span class="ms-2"><b>' . $name . '</b></span>
+                        </div>';
+                        }
+                    }
                 }
                 ?>
-            </ul>
-            <form class="d-flex" role="search">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
-          </div>
+            </div>
         </div>
-</nav>
+    </nav>
+
     <?php
     if (isset($_GET['success'])) {
         $errorMessage = urldecode($_GET['success']);
-        echo '<p style="color: red;">' . $errorMessage . '</p>';
+        echo '
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            ' . $errorMessage . '
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>';
     }
 
     if (isset($_GET['error'])) {
         $errorMessage = urldecode($_GET['error']);
-        ?>
-    
+    ?>
+
         <!-- Bootstrap Alert with Dismiss Button -->
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <?php echo $errorMessage; ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-    
-        <?php
+
+    <?php
     }
 
-    
+
 
     include("../db_cofnfiguration/config.php");
 
@@ -101,7 +132,7 @@ header("Expires: 0");
 
     if ($result->num_rows > 0) {
         echo '<div class="container mt-4">';
-        echo '<div class="row  row-cols-2 row-cols-md-3 g-5">';
+        echo '<div class="row  row-cols-3 row-cols-md-4 g-5">';
 
         while ($row = $result->fetch_assoc()) {
             $id = $row['id'];
@@ -203,7 +234,7 @@ header("Expires: 0");
             });
         });
     </script>
-    <div id="foot-content"></div>
+    <!-- <div id="foot-content"></div> -->
 </body>
 
 </html>
